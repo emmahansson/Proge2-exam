@@ -1,0 +1,42 @@
+Array definition:
+In C, an array is a collection of elements of the same data type stored in contiguous memory locations. To declare an array, 
+you must specify the data type, the array name, and the size (number of elements the array can hold). The general syntax for 
+declaring an array is: data_type array_name[array_size];
+
+
+Declaration:
+An array is declared by specifying its data type, a valid identifier (name), and the size of the array enclosed in square brackets. 
+The size must be a constant expression known at compile time.
+Example: "int grades[50];"   -  Declares an array named 'grades' to hold 50 integer elements.
+
+
+Addressing the array:
+Elements within a C array are accessed using an index, which is an integer value starting from zero for the first element and extending 
+to array_size - 1 for the last element. The array name followed by the index enclosed in square brackets [] is used to address individual elements.
+Example: "grades[0] = 95;"   - Assigns the value 95 to the first element (index 0).
+
+
+
+Compiling the program using separate functions and .h files:
+Header Files (.h):
+Header files serve as interfaces or declarations. They contain:   
+  Function Prototypes: Declarations of functions, specifying their return type, name, and parameter types. This allows 
+                      other source files to know how to call these functions.
+  Data Type Definitions: Using typedef to create aliases for existing data types.   
+  Structure and Union Declarations: Defining the layout of complex data structures.
+  Constant Definitions: Using #define to create symbolic constants.   
+  External Variable Declarations: Using extern to declare variables defined in other source files.   
+  Include Guards: Preprocessor directives (#ifndef, #define, #endif) to prevent the header file's contents from being 
+                   included multiple times during compilation, which could lead to errors.   
+
+The compilation of a multi-file C program typically involves these steps:
+Preprocessing: The preprocessor reads each .c file and processes preprocessor directives (lines starting with #). This includes:
+Replacing #include directives with the contents of the specified files (header files).   
+Expanding macros defined by #define.
+Handling conditional compilation (#ifdef, #ifndef, etc.).
+  
+Compilation: The compiler translates the preprocessed C code in each .c file into object code. Object code is machine-readable code but is not yet a 
+complete executable program. Each .c file is compiled independently, resulting in one or more object files (e.g., main.o, my_functions.o).   
+Linking: The linker takes the object code files produced by the compiler and combines them into a single executable program. During this phase, the linker:
+Resolves external references: If a function in one object file calls a function defined in another, the linker connects these calls to the correct function's address.
+Links with necessary libraries: If the program uses standard library functions (like printf from stdio.h), the linker includes the relevant code from these libraries.
