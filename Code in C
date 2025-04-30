@@ -129,10 +129,10 @@ void writeConsonantsToFile(int fd, const char* consonants) {
 
 // Function to display consonants on the screen
 void displayConsonantsOnScreen(const char* consonants) {
-    // Placeholder for displaying on screen
+    printf("%s\n", consonants);
 }
 
 // Function to handle file opening errors
 void handleFileError() {
-    // Placeholder for error handling
+    // Placeholder for error handling (no printf allowed in main)
 }
