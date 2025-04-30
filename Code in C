@@ -1,1 +1,137 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
+// Function prototypes with unspecified parameters
+char* readSymbolsUntilVowel(const char*, int*);
+int isSymbolVowel(char);
+int isSymbolDigit(char);
+void storeConsonant(char, char*, int*);
+void processStoredSymbols(char*, int, char*, int*);
+void sortStoredConsonants(char*, int);
+int openFileForWriting(const char*);
+void writeConsonantsToFile(int, const char*);
+void displayConsonantsOnScreen(const char*);
+void handleFileError();
+
+int main() {
+    char* storedSymbols = NULL;
+    int storedSymbolCount = 0;
+    char processedConsonants[201] = ""; // Initialize to empty string
+    int consonantCount = 0;
+    int outputFile = -1; // Initialize to error state
+
+    // Input
+    storedSymbols = readSymbolsUntilVowel("f9.txt", &storedSymbolCount);
+
+    // Process
+    processStoredSymbols(storedSymbols, storedSymbolCount, processedConsonants, &consonantCount);
+    free(storedSymbols);
+    sortStoredConsonants(processedConsonants, consonantCount);
+
+    // Output
+    displayConsonantsOnScreen(processedConsonants);
+    outputFile = openFileForWriting("TU.txt");
+    (outputFile != -1) ? writeConsonantsToFile(outputFile, processedConsonants) : handleFileError();
+
+    return 0;
+}
+
+// Function to read symbols from a file until a vowel
+char* readSymbolsUntilVowel(const char* filename, int* count) {
+    FILE* file = fopen(filename, "r");
+    char buffer[201] = "";
+    size_t bytesRead = 0;
+    int vowelIndex = -1;
+    int length = 0;
+    char* symbols = NULL;
+
+    if (file != NULL) {
+        bytesRead = fread(buffer, 1, 200, file);
+        buffer[bytesRead] = '\0';
+        fclose(file);
+
+        for (int i = 0; i < bytesRead; i++) {
+            if (isSymbolVowel(buffer[i])) {
+                vowelIndex = i;
+                break;
+            }
+        }
+        length = (vowelIndex == -1) ? bytesRead : vowelIndex;
+        symbols = (char*)malloc((length + 1) * sizeof(char));
+        if (symbols != NULL) {
+            strncpy(symbols, buffer, length);
+            symbols[length] = '\0';
+            *count = length;
+        } else {
+            *count = 0;
+        }
+    } else {
+        *count = 0;
+    }
+    return symbols;
+}
+
+// Function to check if a symbol is a vowel
+int isSymbolVowel(char c) {
+    return (tolower(c) == 'a' || tolower(c) == 'e' || tolower(c) == 'i' || tolower(c) == 'o' || tolower(c) == 'u');
+}
+
+// Function to check if a symbol is a digit
+int isSymbolDigit(char c) {
+    return isdigit(c);
+}
+
+// Function to store a consonant in an array
+void storeConsonant(char symbol, char* consonants, int* count) {
+    if (*count < 200) {
+        consonants[(*count)++] = symbol;
+        consonants[*count] = '\0';
+    }
+}
+
+// Function to process stored symbols and extract consonants
+void processStoredSymbols(char* symbols, int symbolCount, char* consonants, int* consonantCount) {
+    *consonantCount = 0;
+    for (int i = 0; i < symbolCount && *consonantCount < 200; i++) {
+        (!isSymbolDigit(symbols[i]) && !isSymbolVowel(symbols[i])) ? storeConsonant(symbols[i], consonants, consonantCount) : 0;
+    }
+    consonants[*consonantCount] = '\0';
+}
+
+// Function to sort an array of characters alphabetically
+void sortStoredConsonants(char* arr, int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            (arr[j] > arr[j + 1]) ? (char temp = arr[j], arr[j] = arr[j + 1], arr[j + 1] = temp) : 0;
+        }
+    }
+}
+
+// Function to open a file for writing
+int openFileForWriting(const char* filename) {
+    FILE* file = fopen(filename, "w");
+    return (file != NULL) ? fileno(file) : -1;
+}
+
+// Function to write consonants to a file (using file descriptor)
+void writeConsonantsToFile(int fd, const char* consonants) {
+    FILE* file = fdopen(fd, "w");
+    if (file != NULL) {
+        fprintf(file, "%s", consonants);
+        fclose(file);
+    } else {
+        handleFileError();
+    }
+}
+
+// Function to display consonants on the screen
+void displayConsonantsOnScreen(const char* consonants) {
+    // Placeholder for displaying on screen 
+}
+
+// Function to handle file opening errors
+void handleFileError() {
+    // Placeholder for error handling 
+}
