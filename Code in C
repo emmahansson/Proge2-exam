@@ -52,13 +52,13 @@ char* readSymbolsUntilVowel(const char* filename, int* count) {
         buffer[bytesRead] = '\0';
         fclose(file);
 
-        for (int i = 0; i < bytesRead; i++) {
+        for (size_t i = 0; i < bytesRead; i++) { // Changed 'int i' to 'size_t i'
             if (isSymbolVowel(buffer[i])) {
-                vowelIndex = i;
+                vowelIndex = (int)i; // Cast size_t to int if needed, or handle length as size_t
                 break;
             }
         }
-        length = (vowelIndex == -1) ? bytesRead : vowelIndex;
+        length = (vowelIndex == -1) ? (int)bytesRead : vowelIndex; // Cast size_t to int
         symbols = (char*)malloc((length + 1) * sizeof(char));
         if (symbols != NULL) {
             strncpy(symbols, buffer, length);
@@ -102,9 +102,10 @@ void processStoredSymbols(char* symbols, int symbolCount, char* consonants, int*
 
 // Function to sort an array of characters alphabetically
 void sortStoredConsonants(char* arr, int n) {
+    char temp; // Declare temp outside the ternary operator
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
-            (arr[j] > arr[j + 1]) ? (char temp = arr[j], arr[j] = arr[j + 1], arr[j + 1] = temp) : 0;
+            (arr[j] > arr[j + 1]) ? (temp = arr[j], arr[j] = arr[j + 1], arr[j + 1] = temp) : 0;
         }
     }
 }
@@ -128,10 +129,10 @@ void writeConsonantsToFile(int fd, const char* consonants) {
 
 // Function to display consonants on the screen
 void displayConsonantsOnScreen(const char* consonants) {
-    // Placeholder for displaying on screen 
+    // Placeholder for displaying on screen
 }
 
 // Function to handle file opening errors
 void handleFileError() {
-    // Placeholder for error handling 
+    // Placeholder for error handling
 }
