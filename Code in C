@@ -7,6 +7,8 @@
 char* readSymbolsUntilVowel(const char*, int*);
 int isSymbolVowel(char);
 int isSymbolDigit(char);
+int isLatinLetter(char);
+int isOtherSymbol(char);
 void storeConsonant(char, char*, int*);
 void processStoredSymbols(char*, int, char*, int*);
 void sortStoredConsonants(char*, int);
@@ -18,9 +20,9 @@ void handleFileError();
 int main() {
     char* storedSymbols = NULL;
     int storedSymbolCount = 0;
-    char processedConsonants[201] = ""; // Initialize to empty string
+    char processedConsonants[201] = "";
     int consonantCount = 0;
-    int outputFile = -1; // Initialize to error state
+    int outputFile = -1;
 
     // Input
     storedSymbols = readSymbolsUntilVowel("f9.txt", &storedSymbolCount);
@@ -52,13 +54,13 @@ char* readSymbolsUntilVowel(const char* filename, int* count) {
         buffer[bytesRead] = '\0';
         fclose(file);
 
-        for (size_t i = 0; i < bytesRead; i++) { // Changed 'int i' to 'size_t i'
+        for (size_t i = 0; i < bytesRead; i++) {
             if (isSymbolVowel(buffer[i])) {
-                vowelIndex = (int)i; // Cast size_t to int if needed, or handle length as size_t
+                vowelIndex = (int)i;
                 break;
             }
         }
-        length = (vowelIndex == -1) ? (int)bytesRead : vowelIndex; // Cast size_t to int
+        length = (vowelIndex == -1) ? (int)bytesRead : vowelIndex;
         symbols = (char*)malloc((length + 1) * sizeof(char));
         if (symbols != NULL) {
             strncpy(symbols, buffer, length);
@@ -78,9 +80,19 @@ int isSymbolVowel(char c) {
     return (tolower(c) == 'a' || tolower(c) == 'e' || tolower(c) == 'i' || tolower(c) == 'o' || tolower(c) == 'u');
 }
 
-// Function to check if a symbol is a digit
+// Function to check if a symbol is a digit (Arabic number)
 int isSymbolDigit(char c) {
     return isdigit(c);
+}
+
+// Function to check if a symbol is a Latin letter
+int isLatinLetter(char c) {
+    return (tolower(c) >= 'a' && tolower(c) <= 'z');
+}
+
+// Function to check if a symbol is neither an Arabic number nor a Latin letter
+int isOtherSymbol(char c) {
+    return !isSymbolDigit(c) && !isLatinLetter(c);
 }
 
 // Function to store a consonant in an array
@@ -95,14 +107,20 @@ void storeConsonant(char symbol, char* consonants, int* count) {
 void processStoredSymbols(char* symbols, int symbolCount, char* consonants, int* consonantCount) {
     *consonantCount = 0;
     for (int i = 0; i < symbolCount && *consonantCount < 200; i++) {
-        (!isSymbolDigit(symbols[i]) && !isSymbolVowel(symbols[i])) ? storeConsonant(symbols[i], consonants, consonantCount) : 0;
+        if (!isSymbolDigit(symbols[i]) && isLatinLetter(symbols[i]) && !isSymbolVowel(symbols[i])) {
+            storeConsonant(symbols[i], consonants, consonantCount);
+        }
+        // Example of how to handle other symbols:
+        // if (isOtherSymbol(symbols[i])) {
+        //     printf("Found other symbol: %c\n", symbols[i]);
+        // }
     }
     consonants[*consonantCount] = '\0';
 }
 
 // Function to sort an array of characters alphabetically
 void sortStoredConsonants(char* arr, int n) {
-    char temp; // Declare temp outside the ternary operator
+    char temp;
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
             (arr[j] > arr[j + 1]) ? (temp = arr[j], arr[j] = arr[j + 1], arr[j + 1] = temp) : 0;
@@ -134,5 +152,5 @@ void displayConsonantsOnScreen(const char* consonants) {
 
 // Function to handle file opening errors
 void handleFileError() {
-    // Placeholder for error handling (no printf allowed in main)
+    // Placeholder for error handling
 }
